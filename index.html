@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plané — Персональный планер</title>
   
-  <!-- Внешние шрифты: Parisienne (французский рукописный для логотипа) и JetBrains Mono (для счетчиков) -->
+  <!-- Шрифты: Parisienne (французская каллиграфия для логотипа) и JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
@@ -36,7 +36,6 @@
   </script>
 
   <style>
-    /* Подключение Advaken Sans: ищет файл в репозитории или в системе пользователя */
     @font-face {
       font-family: 'Advaken Sans';
       src: local('Advaken Sans Expanded'),
@@ -62,7 +61,7 @@
       overflow-x: hidden;
     }
 
-    /* Анимированная сцена сияния (Aurora Mesh) */
+    /* Анимированная сцена Aurora Mesh */
     .aurora-bg {
       position: fixed;
       top: 0;
@@ -113,7 +112,7 @@
       100% { transform: translate(-40px, 70px) scale(0.94); }
     }
 
-    /* Многослойное стекло (Glassmorphism) */
+    /* Премиальное многослойное стекло */
     .luxury-glass {
       background: rgba(14, 21, 38, 0.65);
       backdrop-filter: blur(24px);
@@ -135,14 +134,12 @@
       box-shadow: 0 12px 30px rgba(5, 147, 198, 0.15);
     }
 
-    /* Исключение: французский рукописный шрифт только для названия */
     .brand-logo {
       font-family: 'Parisienne', cursive !important;
       letter-spacing: 0.04em;
       text-shadow: 0 2px 16px rgba(5, 147, 198, 0.4);
     }
 
-    /* Моноширинный шрифт только для бейджей и счетчиков */
     .font-mono {
       font-family: 'JetBrains Mono', monospace !important;
     }
@@ -151,7 +148,6 @@
       font-family: 'Advaken Sans', system-ui, -apple-system, sans-serif !important;
     }
 
-    /* Кастомный тонкий скроллбар */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(252, 255, 255, 0.12); border-radius: 9999px; }
@@ -182,7 +178,7 @@
             v1.0
           </span>
         </div>
-        <div class="w-2 h-2 rounded-full bg-[#0593C6] animate-pulse"></div>
+        <div id="sync-status-indicator" class="w-2 h-2 rounded-full bg-white/30" title="Статус синхронизации"></div>
       </div>
 
       <!-- Навигация -->
@@ -231,19 +227,19 @@
       </div>
     </div>
 
-    <!-- Профиль пользователя -->
+    <!-- Профиль пользователя / Статус облака -->
     <div class="pt-4 border-t border-white/5">
       <div id="user-profile" class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0593C6] to-[#DB3996] flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg shadow-[#0593C6]/20">
+          <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0593C6] to-[#DB3996] flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg shadow-[#0593C6]/20">
             P
           </div>
           <div class="leading-tight">
-            <div id="user-display-name" class="text-xs font-medium text-white">Владелец</div>
-            <div class="text-[10px] font-mono text-white/40">Локальный профиль</div>
+            <div id="user-display-name" class="text-xs font-medium text-white truncate max-w-[110px]">Владелец</div>
+            <div id="user-cloud-status" class="text-[10px] font-mono text-white/40">Локальный режим</div>
           </div>
         </div>
-        <button onclick="simulateTelegramLogin()" title="Подключить Telegram" class="p-1.5 rounded-lg hover:bg-white/10 text-[#0593C6] transition">
+        <button onclick="openTelegramModal()" title="Синхронизация через Telegram" class="p-1.5 rounded-lg hover:bg-white/10 text-[#0593C6] transition">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
           </svg>
@@ -270,7 +266,7 @@
       </div>
     </header>
 
-    <!-- РЕЖИМ: СПИСОК -->
+    <!-- РЕЖИМ 1: СПИСОК -->
     <section id="view-list" class="space-y-6">
       <div class="luxury-glass p-2 pl-4 rounded-2xl flex items-center gap-3 border border-white/10 shadow-xl">
         <svg class="w-4 h-4 text-[#0593C6]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -285,7 +281,7 @@
       <div class="space-y-2" id="tasks-container"></div>
     </section>
 
-    <!-- РЕЖИМ: КАНБАН -->
+    <!-- РЕЖИМ 2: КАНБАН -->
     <section id="view-kanban" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 items-start">
       <div class="luxury-glass p-4 rounded-2xl flex flex-col space-y-3">
         <div class="flex items-center justify-between pb-2 border-b border-white/5">
@@ -321,7 +317,7 @@
       </div>
     </section>
 
-    <!-- РЕЖИМ: ЗАМЕТКИ -->
+    <!-- РЕЖИМ 3: ЗАМЕТКИ -->
     <section id="view-notes" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
       <div class="lg:col-span-4 space-y-3">
         <button onclick="createNewNote()" class="w-full py-2.5 px-4 rounded-xl luxury-card text-xs font-medium text-white flex items-center justify-center gap-2 border-dashed hover:border-[#DB3996]/50 transition">
@@ -342,6 +338,30 @@
 
   </main>
 
+  <!-- Модальное окно Telegram Auth -->
+  <div id="modal-telegram" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-[#0593C6]/10 text-[#0593C6] flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-semibold text-white">Облачная синхронизация</h3>
+        <p class="text-xs text-white/50 mt-1">Войдите через Telegram для сохранения задач в PostgreSQL</p>
+      </div>
+      
+      <!-- Контейнер официального Telegram Login Widget -->
+      <div id="telegram-widget-wrapper" class="flex justify-center py-2 min-h-[48px]">
+        <div id="telegram-loading" class="text-xs text-white/40">Подключение виджета...</div>
+      </div>
+
+      <div class="flex justify-center pt-2">
+        <button onclick="closeTelegramModal()" class="px-4 py-1.5 rounded-xl text-xs text-white/60 hover:text-white transition">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Модальное окно создания проекта -->
   <div id="modal-project" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10">
@@ -360,7 +380,14 @@
     <span id="toast-message" class="text-white">Уведомление</span>
   </div>
 
+  <!-- Скрипт синхронизации и приложения -->
   <script>
+    // ==========================================
+    // НАСТРОЙКИ СЕРВЕРА И TELEGRAM-БОТА
+    // ==========================================
+    const API_URL = 'https://plane-backend-fq8e.onrender.com';
+    const BOT_USERNAME = 'plane_planner_bot'; // Укажи точный username своего бота из @BotFather без символа @
+
     let state = {
       projects: JSON.parse(localStorage.getItem('plane_projects')) || [
         { id: 'p1', title: 'Личное' },
@@ -379,11 +406,175 @@
       searchQuery: ''
     };
 
-    function saveState() {
+    let syncDebounceTimer = null;
+
+    // Сохранение локально + запуск синхронизации в облако
+    function saveState(shouldPushCloud = true) {
       localStorage.setItem('plane_projects', JSON.stringify(state.projects));
       localStorage.setItem('plane_tasks', JSON.stringify(state.tasks));
       localStorage.setItem('plane_notes', JSON.stringify(state.notes));
       updateCounts();
+
+      if (shouldPushCloud) {
+        clearTimeout(syncDebounceTimer);
+        syncDebounceTimer = setTimeout(() => {
+          pushToCloud();
+        }, 1200);
+      }
+    }
+
+    // Отправка данных на Render.com (PostgreSQL)
+    async function pushToCloud() {
+      const token = localStorage.getItem('plane_jwt');
+      if (!token) return;
+
+      setSyncStatus('syncing');
+      try {
+        const response = await fetch(`${API_URL}/api/sync`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            projects: state.projects,
+            tasks: state.tasks,
+            notes: state.notes
+          })
+        });
+
+        if (response.ok) {
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('error');
+        }
+      } catch (e) {
+        console.warn('Sync offline:', e);
+        setSyncStatus('offline');
+      }
+    }
+
+    // Загрузка данных из облака при старте
+    async function pullFromCloud() {
+      const token = localStorage.getItem('plane_jwt');
+      if (!token) {
+        setSyncStatus('local');
+        return;
+      }
+
+      setSyncStatus('syncing');
+      try {
+        const response = await fetch(`${API_URL}/api/sync`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const cloudData = await response.json();
+          if (cloudData && (cloudData.tasks?.length || cloudData.projects?.length || cloudData.notes?.length)) {
+            state.projects = cloudData.projects || state.projects;
+            state.tasks = cloudData.tasks || state.tasks;
+            state.notes = cloudData.notes || state.notes;
+            saveState(false);
+            renderProjects();
+            renderTasks();
+            renderKanban();
+            renderNotes();
+          }
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('error');
+        }
+      } catch (e) {
+        console.warn('Initial pull failed:', e);
+        setSyncStatus('offline');
+      }
+    }
+
+    function setSyncStatus(status) {
+      const ind = document.getElementById('sync-status-indicator');
+      const text = document.getElementById('user-cloud-status');
+      if (status === 'synced') {
+        ind.className = 'w-2 h-2 rounded-full bg-[#0593C6] shadow-sm shadow-[#0593C6]';
+        text.innerText = 'Облако синхронизировано';
+      } else if (status === 'syncing') {
+        ind.className = 'w-2 h-2 rounded-full bg-[#DB3996] animate-ping';
+        text.innerText = 'Синхронизация...';
+      } else if (status === 'offline') {
+        ind.className = 'w-2 h-2 rounded-full bg-amber-400';
+        text.innerText = 'Офлайн (сохранено)';
+      } else {
+        ind.className = 'w-2 h-2 rounded-full bg-white/20';
+        text.innerText = 'Локальный режим';
+      }
+    }
+
+    // Callback авторизации от Telegram Login Widget
+    window.onTelegramAuth = async function(user) {
+      showToast('Авторизация в Telegram...', '#0593C6');
+      try {
+        const res = await fetch(`${API_URL}/api/auth/telegram`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(user)
+        });
+
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem('plane_jwt', data.token);
+          localStorage.setItem('plane_user', JSON.stringify(data.user));
+          
+          if (data.data && (data.data.tasks?.length || data.data.notes?.length)) {
+            state.projects = data.data.projects || state.projects;
+            state.tasks = data.data.tasks || state.tasks;
+            state.notes = data.data.notes || state.notes;
+            saveState(false);
+          } else {
+            pushToCloud();
+          }
+
+          updateUserProfileUI(data.user);
+          closeTelegramModal();
+          showToast(`Добро пожаловать, ${data.user.first_name || data.user.username}!`, '#0593C6');
+          renderProjects();
+          renderTasks();
+          renderKanban();
+        } else {
+          showToast(data.error || 'Ошибка проверки авторизации', '#DB3996');
+        }
+      } catch (err) {
+        showToast('Сервер бэкенда пока просыпается, попробуйте еще раз', '#DB3996');
+      }
+    };
+
+    function updateUserProfileUI(user) {
+      if (!user) return;
+      const name = user.username ? `@${user.username}` : user.first_name;
+      document.getElementById('user-display-name').innerText = name;
+      document.getElementById('user-avatar').innerText = (user.first_name || user.username || 'P')[0].toUpperCase();
+      setSyncStatus('synced');
+    }
+
+    function openTelegramModal() {
+      const modal = document.getElementById('modal-telegram');
+      modal.classList.remove('hidden');
+
+      const wrapper = document.getElementById('telegram-widget-wrapper');
+      if (!wrapper.querySelector('script')) {
+        wrapper.innerHTML = '';
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://telegram.org/js/telegram-widget.js?22';
+        script.setAttribute('data-telegram-login', BOT_USERNAME);
+        script.setAttribute('data-size', 'large');
+        script.setAttribute('data-radius', '12');
+        script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+        script.setAttribute('data-request-access', 'write');
+        wrapper.appendChild(script);
+      }
+    }
+
+    function closeTelegramModal() {
+      document.getElementById('modal-telegram').classList.add('hidden');
     }
 
     function showToast(msg, color = '#0593C6') {
@@ -395,7 +586,7 @@
       toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-      }, 2500);
+      }, 3000);
     }
 
     function switchView(view) {
@@ -644,15 +835,15 @@
       renderTasks();
     }
 
-    function simulateTelegramLogin() {
-      showToast('Telegram Auth: сессия сохранена локально', '#0593C6');
-      document.getElementById('user-display-name').innerText = '@telegram_user';
+    // Инициализация профиля и данных при запуске страницы
+    const savedUser = localStorage.getItem('plane_user');
+    if (savedUser) {
+      updateUserProfileUI(JSON.parse(savedUser));
     }
-
-    // Инициализация при старте
     renderProjects();
     renderTasks();
     updateCounts();
+    pullFromCloud();
   </script>
 </body>
 </html>
