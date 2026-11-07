@@ -249,23 +249,23 @@
       </div>
     </div>
 
-    <!-- Профиль и официальный футер сайдбара -->
+    <!-- Профиль пользователя / Статус облака -->
     <div class="space-y-3 pt-4 border-t border-white/5">
-      <div id="user-profile" class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-        <div class="flex items-center gap-3">
-          <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0593C6] to-[#DB3996] flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg shadow-[#0593C6]/20">
-            P
+      <div id="user-profile" onclick="handleProfileClick()" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition group">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="user-avatar" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-mono text-xs font-bold text-white/50 shrink-0">
+            ?
           </div>
-          <div class="leading-tight">
-            <div id="user-display-name" class="text-xs font-medium text-white truncate max-w-[110px]">Владелец</div>
-            <div id="user-cloud-status" class="text-[10px] font-mono text-white/40">Локальный режим</div>
+          <div class="leading-tight min-w-0">
+            <div id="user-display-name" class="text-xs font-medium text-white truncate max-w-[110px]">Гость</div>
+            <div id="user-cloud-status" class="text-[10px] font-mono text-[#0593C6]">Войти в облако →</div>
           </div>
         </div>
-        <button onclick="openTelegramModal()" title="Синхронизация через Telegram" class="p-1.5 rounded-lg hover:bg-white/10 text-[#0593C6] transition">
+        <div id="user-action-btn" class="p-1.5 rounded-lg hover:bg-white/10 text-[#0593C6] transition shrink-0" title="Авторизация">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
           </svg>
-        </button>
+        </div>
       </div>
 
       <!-- Юридические ссылки -->
@@ -317,7 +317,6 @@
 
     <!-- РЕЖИМ 2: КАЛЕНДАРЬ -->
     <section id="view-calendar" class="hidden flex-1 flex flex-col space-y-4">
-      <!-- Навигация календаря -->
       <div class="luxury-glass p-4 rounded-2xl flex items-center justify-between border border-white/10">
         <div class="flex items-center gap-3">
           <h2 id="calendar-month-year" class="text-base font-semibold text-white tracking-wide">Ноябрь 2026</h2>
@@ -339,12 +338,10 @@
         </div>
       </div>
 
-      <!-- Заголовки дней недели -->
       <div class="grid grid-cols-7 gap-2 px-2 text-center text-[11px] font-mono uppercase tracking-wider text-white/40">
         <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
       </div>
 
-      <!-- Сетка дней -->
       <div id="calendar-grid" class="grid grid-cols-7 gap-2 flex-1 pb-6"></div>
     </section>
 
@@ -414,7 +411,7 @@
       </div>
       
       <div class="space-y-3">
-        <input type="text" id="event-title-input" placeholder="Название события или встречи..." class="w-full px-3.5 py-2.5 text-xs rounded-xl luxury-card text-white placeholder-white/30 focus:outline-none focus:border-[#0593C6]/60">
+        <input type="text" id="event-title-input" placeholder="Название события или задачи..." class="w-full px-3.5 py-2.5 text-xs rounded-xl luxury-card text-white placeholder-white/30 focus:outline-none focus:border-[#0593C6]/60">
         
         <div class="space-y-1">
           <label class="text-[10px] font-mono text-white/40 uppercase">Проект</label>
@@ -493,9 +490,9 @@
     </div>
   </div>
 
-  <!-- Модальное окно Telegram Auth -->
+  <!-- МОДАЛЬНОЕ ОКНО TELEGRAM AUTH -->
   <div id="modal-telegram" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10 text-center">
+    <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10 text-center shadow-2xl">
       <div class="w-12 h-12 rounded-2xl bg-[#0593C6]/10 text-[#0593C6] flex items-center justify-center mx-auto">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
@@ -503,7 +500,7 @@
       </div>
       <div>
         <h3 class="text-base font-semibold text-white">Облачная синхронизация</h3>
-        <p class="text-xs text-white/50 mt-1">Войдите через Telegram для сохранения задач в PostgreSQL</p>
+        <p class="text-xs text-white/50 mt-1">Войдите через Telegram для сохранения задач и заметок в PostgreSQL</p>
       </div>
       
       <div id="telegram-widget-wrapper" class="flex justify-center py-2 min-h-[48px]">
@@ -516,9 +513,9 @@
     </div>
   </div>
 
-  <!-- Модальное окно создания проекта -->
+  <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ПРОЕКТА -->
   <div id="modal-project" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10">
+    <div class="luxury-glass p-6 rounded-2xl w-full max-w-sm space-y-4 border border-white/10 shadow-2xl">
       <h3 class="text-base font-semibold text-white">Новый проект</h3>
       <input type="text" id="project-title-input" placeholder="Название (например, Дизайн, Учеба)" class="w-full px-3.5 py-2.5 text-xs rounded-xl luxury-card text-white placeholder-white/30 focus:outline-none focus:border-[#0593C6]/60">
       <div class="flex justify-end gap-2 pt-2">
@@ -528,17 +525,17 @@
     </div>
   </div>
 
-  <!-- Toast уведомления -->
+  <!-- TOAST УВЕДОМЛЕНИЯ -->
   <div id="toast" class="fixed bottom-6 right-6 luxury-glass px-4 py-3 rounded-xl text-xs flex items-center gap-3 border border-white/10 shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50">
     <div id="toast-indicator" class="w-2 h-2 rounded-full bg-[#0593C6]"></div>
     <span id="toast-message" class="text-white">Уведомление</span>
   </div>
 
+  <!-- ОСНОВНОЙ СКРИПТ ПРИЛОЖЕНИЯ -->
   <script>
     const API_URL = 'https://plane-backend-fq8e.onrender.com';
     const BOT_USERNAME = 'planenner_bot';
 
-    // Вспомогательная функция для форматирования даты в YYYY-MM-DD
     function formatDateKey(d) {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -554,12 +551,10 @@
         { id: 'p2', title: 'Работа' }
       ],
       tasks: JSON.parse(localStorage.getItem('plane_tasks')) || [
-        { id: 't1', title: 'Опубликовать планер на GitHub Pages', status: 'done', project: 'p2', date: todayStr },
-        { id: 't2', title: 'Настроить французскую типографику Plané', status: 'done', project: 'p1', date: todayStr },
-        { id: 't3', title: 'Подключить Telegram Auth для удаленного доступа', status: 'progress', project: 'p2', date: todayStr }
+        { id: 't1', title: 'Добро пожаловать в Plané! Нажмите, чтобы завершить задачу', status: 'todo', project: 'p1', date: todayStr }
       ],
       notes: JSON.parse(localStorage.getItem('plane_notes')) || [
-        { id: 'n1', title: 'Архитектурный план Plané', content: 'Цель: сделать легкий и быстрый персональный планер без перегрузки кнопками.\n\nЭстетика: Parisienne + Advaken Sans, глубокий темный фон, акценты небесно-голубого и ярко-розового.' }
+        { id: 'n1', title: 'Первая заметка', content: 'Plané поддерживает списки, канбан-доску, календарь и облачную синхронизацию.\n\nЧтобы ваши задачи были доступны на телефоне и компьютере, авторизуйтесь через Telegram в нижнем левом углу.' }
       ],
       activeProject: 'all',
       activeNoteId: null,
@@ -655,7 +650,7 @@
       const text = document.getElementById('user-cloud-status');
       if (status === 'synced') {
         ind.className = 'w-2 h-2 rounded-full bg-[#0593C6] shadow-sm shadow-[#0593C6]';
-        text.innerText = 'Облако синхронизировано';
+        text.innerText = 'Синхронизировано';
       } else if (status === 'syncing') {
         ind.className = 'w-2 h-2 rounded-full bg-[#DB3996] animate-ping';
         text.innerText = 'Синхронизация...';
@@ -664,7 +659,7 @@
         text.innerText = 'Офлайн (сохранено)';
       } else {
         ind.className = 'w-2 h-2 rounded-full bg-white/20';
-        text.innerText = 'Локальный режим';
+        text.innerText = 'Войти в облако →';
       }
     }
 
@@ -706,12 +701,59 @@
       }
     };
 
+    function handleProfileClick() {
+      const token = localStorage.getItem('plane_jwt');
+      if (!token) {
+        openTelegramModal();
+      } else {
+        if (confirm('Выйти из учетной записи Telegram на этом устройстве?')) {
+          logoutUser();
+        }
+      }
+    }
+
     function updateUserProfileUI(user) {
-      if (!user) return;
+      if (!user) {
+        document.getElementById('user-display-name').innerText = 'Гость';
+        document.getElementById('user-cloud-status').innerText = 'Войти в облако →';
+        document.getElementById('user-avatar').innerText = '?';
+        document.getElementById('user-avatar').className = 'w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-mono text-xs font-bold text-white/50 shrink-0';
+        document.getElementById('user-action-btn').innerHTML = `
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+        `;
+        return;
+      }
+
       const name = user.username ? `@${user.username}` : user.first_name;
       document.getElementById('user-display-name').innerText = name;
-      document.getElementById('user-avatar').innerText = (user.first_name || user.username || 'P')[0].toUpperCase();
-      setSyncStatus('synced');
+      document.getElementById('user-avatar').innerText = (user.first_name || user.username || 'U')[0].toUpperCase();
+      document.getElementById('user-avatar').className = 'w-8 h-8 rounded-full bg-gradient-to-tr from-[#0593C6] to-[#DB3996] flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg shadow-[#0593C6]/20 shrink-0';
+      document.getElementById('user-cloud-status').innerText = 'Синхронизировано';
+      
+      document.getElementById('user-action-btn').innerHTML = `
+        <svg class="w-4 h-4 text-white/40 hover:text-[#DB3996] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      `;
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('plane_jwt');
+      localStorage.removeItem('plane_user');
+      localStorage.removeItem('plane_tasks');
+      localStorage.removeItem('plane_notes');
+      
+      state.tasks = [];
+      state.notes = [];
+      updateUserProfileUI(null);
+      setSyncStatus('local');
+      renderTasks();
+      renderKanban();
+      renderNotes();
+      renderCalendar();
+      showToast('Вы вышли из учетной записи');
     }
 
     function openTelegramModal() {
@@ -719,7 +761,7 @@
       modal.classList.remove('hidden');
 
       const wrapper = document.getElementById('telegram-widget-wrapper');
-      if (!wrapper.querySelector('script')) {
+      if (!wrapper.querySelector('script') && !wrapper.querySelector('iframe')) {
         wrapper.innerHTML = '';
         const script = document.createElement('script');
         script.async = true;
@@ -763,18 +805,15 @@
       const grid = document.getElementById('calendar-grid');
       grid.innerHTML = '';
 
-      // Первый день месяца и общее число дней
       const firstDayOfMonth = new Date(year, month, 1);
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       
-      // Понедельник = 0, Воскресенье = 6
       const startDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
       const prevMonthDays = new Date(year, month, 0).getDate();
 
       const today = new Date();
       const todayFormatted = formatDateKey(today);
 
-      // Ячейки предыдущего месяца
       for (let i = startDayIndex - 1; i >= 0; i--) {
         const dayNum = prevMonthDays - i;
         const d = new Date(year, month - 1, dayNum);
@@ -782,14 +821,12 @@
         grid.appendChild(cell);
       }
 
-      // Ячейки текущего месяца
       for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
         const d = new Date(year, month, dayNum);
         const cell = createCalendarDayCell(d, dayNum, true, todayFormatted);
         grid.appendChild(cell);
       }
 
-      // Ячейки следующего месяца до полной сетки (кратной 7)
       const totalCells = startDayIndex + daysInMonth;
       const trailingDays = (7 - (totalCells % 7)) % 7;
       for (let dayNum = 1; dayNum <= trailingDays; dayNum++) {
@@ -806,7 +843,6 @@
       const cell = document.createElement('div');
       cell.className = `calendar-cell luxury-card p-2 rounded-xl flex flex-col justify-between cursor-pointer border ${isToday ? 'border-[#0593C6]/60 bg-[#0593C6]/5 shadow-lg shadow-[#0593C6]/10' : 'border-white/5'} ${isCurrentMonth ? '' : 'opacity-30'}`;
       
-      // Клик открывает модалку создания события на эту дату
       cell.onclick = (e) => {
         if (e.target.closest('.task-pill')) return;
         openEventModal(dateKey);
@@ -822,7 +858,6 @@
       `;
       cell.appendChild(topRow);
 
-      // Контейнер событий на этот день
       const eventsContainer = document.createElement('div');
       eventsContainer.className = 'space-y-1 mt-1.5 overflow-hidden';
 
@@ -1250,6 +1285,8 @@
     const savedUser = localStorage.getItem('plane_user');
     if (savedUser) {
       updateUserProfileUI(JSON.parse(savedUser));
+    } else {
+      updateUserProfileUI(null);
     }
     renderProjects();
     renderTasks();
