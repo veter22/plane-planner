@@ -119,22 +119,23 @@
     }
 
     .luxury-glass {
-      background: rgba(14, 21, 38, 0.72);
+      background: rgba(14, 21, 38, 0.75);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(252, 255, 255, 0.08);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(252, 255, 255, 0.1);
     }
     .luxury-card {
-      background: rgba(18, 27, 49, 0.55);
+      background: rgba(18, 27, 49, 0.5);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(252, 255, 255, 0.06);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .luxury-card:hover {
-      background: rgba(24, 35, 63, 0.75);
+      background: rgba(24, 35, 63, 0.7);
       border-color: rgba(5, 147, 198, 0.4);
+      transform: translateY(-2px);
       box-shadow: 0 12px 30px rgba(5, 147, 198, 0.15);
     }
 
@@ -143,11 +144,6 @@
       transition: all 0.2s ease;
     }
     @media (min-width: 640px) {
-      .calendar-cell {
-        min-height: 80px;
-      }
-    }
-    @media (min-width: 1024px) {
       .calendar-cell {
         min-height: 96px;
       }
@@ -178,7 +174,7 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col md:flex-row text-[#FCFFFF] antialiased selection:bg-[#DB3996]/30 selection:text-white">
+<body class="min-h-screen flex text-[#FCFFFF] antialiased selection:bg-[#DB3996]/30 selection:text-white">
 
   <!-- Фон со свечением -->
   <div class="aurora-bg">
@@ -188,13 +184,13 @@
   </div>
 
   <!-- Затемнение для мобильного меню -->
-  <div id="mobile-sidebar-backdrop" onclick="toggleSidebar(false)" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden transition-opacity"></div>
+  <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-30 hidden transition-opacity duration-300 md:hidden"></div>
 
-  <!-- Боковое меню (десктоп: колонка слева, мобилка: выезжающий drawer) -->
-  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 h-screen luxury-glass border-r border-white/5 flex flex-col justify-between p-6 shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
-    <div class="space-y-6">
+  <!-- Боковое меню (десктопная панель / мобильный Drawer) -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 h-screen luxury-glass border-r border-white/5 flex flex-col justify-between p-6 shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+    <div class="space-y-8">
       
-      <!-- Логотип Plané c бейджем BETA и кнопкой закрытия для телефона -->
+      <!-- Логотип Plané c бейджем BETA и кнопкой закрытия для смартфонов -->
       <div class="flex items-center justify-between pb-4 border-b border-white/5">
         <div class="flex items-baseline gap-2.5">
           <span class="brand-logo text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FCFFFF] to-[#0593C6] select-none">
@@ -206,7 +202,7 @@
         </div>
         <div class="flex items-center gap-2">
           <div id="sync-status-indicator" class="w-2 h-2 rounded-full bg-white/30" title="Статус синхронизации"></div>
-          <button onclick="toggleSidebar(false)" class="md:hidden p-1.5 text-white/40 hover:text-white rounded-lg transition" title="Закрыть">
+          <button onclick="toggleSidebar(false)" class="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition md:hidden" aria-label="Закрыть меню">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -214,7 +210,7 @@
         </div>
       </div>
 
-      <!-- Навигация (для десктопа) -->
+      <!-- Навигация -->
       <nav class="space-y-1.5 font-medium text-sm">
         <button onclick="switchView('list')" id="nav-list" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition bg-white/10 text-white font-medium">
           <div class="flex items-center gap-3">
@@ -256,10 +252,10 @@
       </nav>
 
       <!-- Раздел проектов -->
-      <div class="space-y-2.5 pt-2">
+      <div class="space-y-3 pt-3">
         <div class="flex items-center justify-between px-1">
           <span class="text-[11px] font-mono uppercase tracking-widest text-white/40">Проекты</span>
-          <button onclick="openProjectModal()" class="p-1 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition" title="Создать проект">
+          <button onclick="handleCreateProjectClick()" class="p-1 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition" title="Создать проект">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
@@ -303,36 +299,39 @@
   </aside>
 
   <!-- Основная рабочая область -->
-  <main class="flex-1 w-full min-h-screen md:h-screen overflow-y-auto flex flex-col p-4 sm:p-6 lg:p-12 pb-24 md:pb-8">
+  <main class="flex-1 min-w-0 h-screen overflow-y-auto flex flex-col p-4 sm:p-6 md:p-8 lg:p-12">
     
-    <!-- Мобильная верхняя панель (видна только на экранах < md) -->
-    <header class="md:hidden flex items-center justify-between pb-3.5 mb-3 border-b border-white/5">
+    <!-- Мобильная плашка (только на мобильных экранах) -->
+    <div class="flex md:hidden items-center justify-between pb-4 mb-3 border-b border-white/5 shrink-0">
       <div class="flex items-center gap-3">
-        <button onclick="toggleSidebar(true)" class="p-2 rounded-xl luxury-card text-white/80 hover:text-white transition" title="Открыть меню и проекты">
+        <button onclick="toggleSidebar(true)" class="p-2 rounded-xl luxury-card text-white/70 hover:text-white transition" aria-label="Открыть меню">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
         <div class="flex items-baseline gap-2">
-          <span class="brand-logo text-3xl text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FCFFFF] to-[#0593C6]">Plané</span>
-          <span class="text-[8px] font-mono text-[#0593C6] px-1.5 py-0.5 rounded border border-[#0593C6]/30 bg-[#0593C6]/10 font-semibold">beta</span>
+          <span class="brand-logo text-2xl text-transparent bg-clip-text bg-gradient-to-r from-white to-[#0593C6] select-none">
+            Plané
+          </span>
+          <span class="text-[8px] font-mono uppercase text-[#0593C6] px-1.5 py-0.5 rounded border border-[#0593C6]/30 bg-[#0593C6]/10 font-semibold">
+            beta
+          </span>
         </div>
       </div>
-      <button onclick="handleProfileClick()" class="p-1 rounded-xl luxury-card flex items-center gap-2 pr-2" title="Профиль">
-        <div id="mob-user-avatar" class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center font-mono text-xs font-bold text-white/50">
-          ?
-        </div>
-        <div id="mob-sync-indicator" class="w-2 h-2 rounded-full bg-white/30"></div>
+      <button onclick="handleProfileClick()" class="p-2 rounded-xl luxury-card text-[#0593C6] hover:brightness-125 transition" title="Профиль">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
       </button>
-    </header>
+    </div>
 
     <!-- Заголовок страницы и Поиск -->
-    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 sm:pb-8 gap-3.5">
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 sm:pb-8">
       <div>
         <h1 id="view-title" class="text-xl sm:text-2xl font-semibold tracking-tight text-white">Список задач</h1>
-        <p id="view-subtitle" class="text-xs text-white/40 mt-0.5">Минималистичный персональный фокус</p>
+        <p id="view-subtitle" class="text-xs text-white/40 mt-0.5 sm:mt-1">Минималистичный персональный фокус</p>
       </div>
-      <div class="w-full sm:w-auto flex items-center gap-3">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
         <div class="relative w-full sm:w-64">
           <input type="text" id="global-search" oninput="handleSearch(this.value)" placeholder="Поиск..." class="w-full px-4 py-2 pl-9 text-xs rounded-xl luxury-card text-white placeholder-white/30 focus:outline-none focus:border-[#0593C6]/60">
           <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -343,13 +342,13 @@
     </header>
 
     <!-- РЕЖИМ 1: СПИСОК -->
-    <section id="view-list" class="space-y-4 sm:space-y-6">
+    <section id="view-list" class="space-y-6">
       <div class="luxury-glass p-2 pl-3 sm:pl-4 rounded-2xl flex items-center gap-2 sm:gap-3 border border-white/10 shadow-xl">
         <svg class="w-4 h-4 text-[#0593C6] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        <input type="text" id="new-task-input" placeholder="Новая задача... (нажмите Enter)" class="bg-transparent flex-1 text-xs sm:text-sm text-white placeholder-white/30 focus:outline-none min-w-0" onkeydown="if(event.key==='Enter') createTask()">
-        <button onclick="createTask()" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#0593C6] to-[#0593C6]/80 hover:brightness-110 text-white text-xs font-semibold tracking-wide transition shadow-md shadow-[#0593C6]/20 shrink-0">
+        <input type="text" id="new-task-input" placeholder="Добавить новую задачу... (нажмите Enter)" class="bg-transparent flex-1 min-w-0 text-xs sm:text-sm text-white placeholder-white/30 focus:outline-none" onkeydown="if(event.key==='Enter') createTask()">
+        <button onclick="createTask()" class="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#0593C6] to-[#0593C6]/80 hover:brightness-110 text-white text-xs font-semibold tracking-wide transition shadow-md shadow-[#0593C6]/20 shrink-0">
           Создать
         </button>
       </div>
@@ -358,7 +357,7 @@
     </section>
 
     <!-- РЕЖИМ 2: КАЛЕНДАРЬ -->
-    <section id="view-calendar" class="hidden flex-1 flex flex-col space-y-3 sm:space-y-4">
+    <section id="view-calendar" class="hidden flex-1 flex flex-col space-y-4">
       <div class="luxury-glass p-3 sm:p-4 rounded-2xl flex items-center justify-between border border-white/10">
         <div class="flex items-center gap-2 sm:gap-3">
           <h2 id="calendar-month-year" class="text-sm sm:text-base font-semibold text-white tracking-wide">Ноябрь 2026</h2>
@@ -367,29 +366,29 @@
           </button>
         </div>
         <div class="flex items-center gap-1 sm:gap-1.5">
-          <button onclick="changeCalendarMonth(-1)" class="p-1.5 sm:p-2 rounded-xl luxury-card text-white/60 hover:text-white transition">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <button onclick="changeCalendarMonth(-1)" class="p-1.5 sm:p-2 rounded-xl luxury-card text-white/60 hover:text-white transition" aria-label="Предыдущий месяц">
+            <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button onclick="changeCalendarMonth(1)" class="p-1.5 sm:p-2 rounded-xl luxury-card text-white/60 hover:text-white transition">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <button onclick="changeCalendarMonth(1)" class="p-1.5 sm:p-2 rounded-xl luxury-card text-white/60 hover:text-white transition" aria-label="Следующий месяц">
+            <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/40">
+      <div class="grid grid-cols-7 gap-1 sm:gap-2 px-1 text-center text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/40">
         <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
       </div>
 
-      <div id="calendar-grid" class="grid grid-cols-7 gap-1 sm:gap-2 flex-1 pb-4"></div>
+      <div id="calendar-grid" class="grid grid-cols-7 gap-1 sm:gap-2 flex-1 pb-6"></div>
     </section>
 
     <!-- РЕЖИМ 3: КАНБАН -->
     <section id="view-kanban" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 flex-1 items-start">
-      <div class="luxury-glass p-3.5 sm:p-4 rounded-2xl flex flex-col space-y-3">
+      <div class="luxury-glass p-4 rounded-2xl flex flex-col space-y-3">
         <div class="flex items-center justify-between pb-2 border-b border-white/5">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-white/40"></span>
@@ -397,10 +396,10 @@
           </div>
           <span id="count-kanban-todo" class="text-xs font-mono text-white/40">0</span>
         </div>
-        <div id="kanban-todo" class="space-y-2 min-h-[120px] md:min-h-[400px]"></div>
+        <div id="kanban-todo" class="space-y-2 min-h-[160px] md:min-h-[400px]"></div>
       </div>
 
-      <div class="luxury-glass p-3.5 sm:p-4 rounded-2xl flex flex-col space-y-3">
+      <div class="luxury-glass p-4 rounded-2xl flex flex-col space-y-3">
         <div class="flex items-center justify-between pb-2 border-b border-white/5">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-[#0593C6]"></span>
@@ -408,10 +407,10 @@
           </div>
           <span id="count-kanban-progress" class="text-xs font-mono text-white/40">0</span>
         </div>
-        <div id="kanban-progress" class="space-y-2 min-h-[120px] md:min-h-[400px]"></div>
+        <div id="kanban-progress" class="space-y-2 min-h-[160px] md:min-h-[400px]"></div>
       </div>
 
-      <div class="luxury-glass p-3.5 sm:p-4 rounded-2xl flex flex-col space-y-3">
+      <div class="luxury-glass p-4 rounded-2xl flex flex-col space-y-3">
         <div class="flex items-center justify-between pb-2 border-b border-white/5">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-[#DB3996]"></span>
@@ -419,23 +418,23 @@
           </div>
           <span id="count-kanban-done" class="text-xs font-mono text-white/40">0</span>
         </div>
-        <div id="kanban-done" class="space-y-2 min-h-[120px] md:min-h-[400px]"></div>
+        <div id="kanban-done" class="space-y-2 min-h-[160px] md:min-h-[400px]"></div>
       </div>
     </section>
 
     <!-- РЕЖИМ 4: ЗАМЕТКИ С ФУНКЦИЕЙ УДАЛЕНИЯ -->
     <section id="view-notes" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 flex-1">
-      <div class="lg:col-span-4 space-y-2.5">
+      <div class="lg:col-span-4 space-y-3">
         <button onclick="createNewNote()" class="w-full py-2.5 px-4 rounded-xl luxury-card text-xs font-medium text-white flex items-center justify-center gap-2 border-dashed hover:border-[#DB3996]/50 transition">
           <svg class="w-3.5 h-3.5 text-[#DB3996]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           Новая заметка
         </button>
-        <div id="notes-list" class="space-y-2 max-h-48 lg:max-h-none overflow-y-auto"></div>
+        <div id="notes-list" class="space-y-2 max-h-56 lg:max-h-none overflow-y-auto pr-1"></div>
       </div>
 
-      <div class="lg:col-span-8 luxury-glass rounded-2xl p-4 sm:p-6 flex flex-col space-y-3 sm:space-y-4 min-h-[360px]">
+      <div class="lg:col-span-8 luxury-glass rounded-2xl p-4 sm:p-6 flex flex-col space-y-4 min-h-[360px]">
         <div class="flex items-center justify-between gap-3">
           <input type="text" id="active-note-title" placeholder="Заголовок заметки..." class="bg-transparent text-lg sm:text-xl font-semibold text-white placeholder-white/30 focus:outline-none flex-1 min-w-0" oninput="saveCurrentNote()">
           <button onclick="deleteActiveNote()" id="btn-delete-active-note" class="p-2 rounded-xl text-white/30 hover:text-[#DB3996] hover:bg-white/5 transition flex items-center gap-1.5 text-xs font-medium shrink-0" title="Удалить текущую заметку">
@@ -451,37 +450,6 @@
     </section>
 
   </main>
-
-  <!-- Нижний мобильный таб-бар навигации (PWA / iOS / Android) -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 luxury-glass border-t border-white/10 px-2 py-1.5 flex items-center justify-around backdrop-blur-2xl bg-[#070b14]/90">
-    <button onclick="switchView('list')" id="mob-nav-list" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition text-[#0593C6]">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
-      </svg>
-      <span class="text-[10px] font-medium font-sans">Задачи</span>
-    </button>
-
-    <button onclick="switchView('calendar')" id="mob-nav-calendar" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition text-white/50 hover:text-white">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      <span class="text-[10px] font-medium font-sans">Календарь</span>
-    </button>
-
-    <button onclick="switchView('kanban')" id="mob-nav-kanban" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition text-white/50 hover:text-white">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-      </svg>
-      <span class="text-[10px] font-medium font-sans">Канбан</span>
-    </button>
-
-    <button onclick="switchView('notes')" id="mob-nav-notes" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition text-white/50 hover:text-white">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-      </svg>
-      <span class="text-[10px] font-medium font-sans">Заметки</span>
-    </button>
-  </nav>
 
   <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ СОБЫТИЯ В КАЛЕНДАРЬ -->
   <div id="modal-event" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -508,7 +476,7 @@
   </div>
 
   <!-- БАННЕР COOKIE -->
-  <div id="cookie-banner" class="hidden fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-8 md:max-w-md z-50 luxury-glass p-4 sm:p-5 rounded-2xl border border-white/10 shadow-2xl space-y-3">
+  <div id="cookie-banner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-6 md:max-w-md z-50 luxury-glass p-5 rounded-2xl border border-white/10 shadow-2xl space-y-3">
     <div class="flex items-start gap-3">
       <div class="w-8 h-8 rounded-xl bg-[#0593C6]/10 text-[#0593C6] flex items-center justify-center shrink-0 mt-0.5">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -536,7 +504,7 @@
 
   <!-- ОФИЦИАЛЬНОЕ ЮРИДИЧЕСКОЕ МОДАЛЬНОЕ ОКНО -->
   <div id="modal-legal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-    <div class="luxury-glass p-5 md:p-8 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col space-y-4 sm:space-y-5 border border-white/10 shadow-2xl">
+    <div class="luxury-glass p-6 md:p-8 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col space-y-5 border border-white/10 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-white/5">
         <div class="flex items-center gap-3">
           <span class="brand-logo text-2xl text-[#0593C6]">Plané</span>
@@ -549,15 +517,15 @@
         </button>
       </div>
 
-      <div class="flex gap-1.5 sm:gap-2 p-1 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] sm:text-xs font-medium">
+      <div class="flex gap-2 p-1 rounded-xl bg-white/[0.03] border border-white/5 text-xs font-medium">
         <button onclick="switchLegalTab('privacy')" id="tab-privacy" class="flex-1 py-1.5 rounded-lg transition bg-white/10 text-white">
-          Политика
+          Политика конфиденциальности
         </button>
         <button onclick="switchLegalTab('terms')" id="tab-terms" class="flex-1 py-1.5 rounded-lg transition text-white/50 hover:text-white">
-          Лицензия
+          Лицензия и условия
         </button>
         <button onclick="switchLegalTab('cookies')" id="tab-cookies" class="flex-1 py-1.5 rounded-lg transition text-white/50 hover:text-white">
-          Cookie
+          Политика Cookie
         </button>
       </div>
 
@@ -573,24 +541,24 @@
 
   <!-- УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ (TELEGRAM, EMAIL) -->
   <div id="modal-auth" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-    <div class="luxury-glass p-5 sm:p-7 rounded-2xl w-full max-w-sm space-y-4 sm:space-y-5 border border-white/10 text-center shadow-2xl">
+    <div class="luxury-glass p-6 md:p-7 rounded-2xl w-full max-w-sm space-y-5 border border-white/10 text-center shadow-2xl">
       
       <div>
-        <div class="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-2.5 text-[#0593C6]">
+        <div class="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-3 text-[#0593C6]">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
         <h3 class="text-base font-semibold text-white tracking-wide">Вход в Plané Cloud</h3>
-        <p class="text-xs text-white/50 mt-0.5">Синхронизируйте задачи и заметки между устройствами</p>
+        <p class="text-xs text-white/50 mt-1">Синхронизируйте задачи и заметки между устройствами</p>
       </div>
 
       <!-- Вкладки способов авторизации -->
       <div class="flex p-1 rounded-xl bg-white/[0.03] border border-white/5 text-xs font-medium">
-        <button onclick="switchAuthTab('telegram')" id="auth-tab-btn-telegram" class="flex-1 py-1.5 rounded-lg transition bg-white/10 text-white font-medium">
+        <button onclick="switchAuthTab('telegram')" id="auth-tab-btn-telegram" class="flex-1 py-1.5 rounded-lg transition bg-white/10 text-white">
           Telegram
         </button>
-        <button onclick="switchAuthTab('email')" id="auth-tab-btn-email" class="flex-1 py-1.5 rounded-lg transition text-white/50 hover:text-white font-medium">
+        <button onclick="switchAuthTab('email')" id="auth-tab-btn-email" class="flex-1 py-1.5 rounded-lg transition text-white/50 hover:text-white">
           Email
         </button>
       </div>
@@ -650,7 +618,7 @@
   </div>
 
   <!-- TOAST УВЕДОМЛЕНИЯ -->
-  <div id="toast" class="fixed bottom-20 md:bottom-6 right-4 sm:right-6 luxury-glass px-4 py-3 rounded-xl text-xs flex items-center gap-3 border border-white/10 shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50">
+  <div id="toast" class="fixed bottom-6 right-6 luxury-glass px-4 py-3 rounded-xl text-xs flex items-center gap-3 border border-white/10 shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50">
     <div id="toast-indicator" class="w-2 h-2 rounded-full bg-[#0593C6]"></div>
     <span id="toast-message" class="text-white">Уведомление</span>
   </div>
@@ -689,21 +657,22 @@
 
     let syncDebounceTimer = null;
 
-    function isUserGuest() {
+    function isGuest() {
       return !localStorage.getItem('plane_jwt');
     }
 
     function toggleSidebar(open) {
       const sidebar = document.getElementById('sidebar');
-      const backdrop = document.getElementById('mobile-sidebar-backdrop');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar || !backdrop) return;
       if (open) {
         sidebar.classList.remove('-translate-x-full');
         backdrop.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('overflow-hidden');
       } else {
         sidebar.classList.add('-translate-x-full');
         backdrop.classList.add('hidden');
-        document.body.style.overflow = '';
+        document.body.classList.remove('overflow-hidden');
       }
     }
 
@@ -789,27 +758,22 @@
 
     function setSyncStatus(status) {
       const ind = document.getElementById('sync-status-indicator');
-      const mobInd = document.getElementById('mob-sync-indicator');
       const text = document.getElementById('user-cloud-status');
-      
-      const setClasses = (cls, txt) => {
-        if (ind) ind.className = cls;
-        if (mobInd) mobInd.className = cls;
-        if (text) text.innerText = txt;
-      };
-
       if (status === 'synced') {
-        setClasses('w-2 h-2 rounded-full bg-[#0593C6] shadow-sm shadow-[#0593C6]', 'Синхронизировано');
+        ind.className = 'w-2 h-2 rounded-full bg-[#0593C6] shadow-sm shadow-[#0593C6]';
+        text.innerText = 'Синхронизировано';
       } else if (status === 'syncing') {
-        setClasses('w-2 h-2 rounded-full bg-[#DB3996] animate-ping', 'Синхронизация...');
+        ind.className = 'w-2 h-2 rounded-full bg-[#DB3996] animate-ping';
+        text.innerText = 'Синхронизация...';
       } else if (status === 'offline') {
-        setClasses('w-2 h-2 rounded-full bg-amber-400', 'Офлайн (сохранено)');
+        ind.className = 'w-2 h-2 rounded-full bg-amber-400';
+        text.innerText = 'Офлайн (сохранено)';
       } else {
-        setClasses('w-2 h-2 rounded-full bg-white/20', 'Войти в облако →');
+        ind.className = 'w-2 h-2 rounded-full bg-white/20';
+        text.innerText = 'Войти в облако →';
       }
     }
 
-    // Обработка успешного входа
     function onAuthSuccess(token, user, cloudData) {
       localStorage.setItem('plane_jwt', token);
       localStorage.setItem('plane_user', JSON.stringify(user));
@@ -866,7 +830,6 @@
     }
 
     function updateUserProfileUI(user) {
-      const mobAvatar = document.getElementById('mob-user-avatar');
       if (!user) {
         document.getElementById('user-display-name').innerText = 'Гость';
         document.getElementById('user-cloud-status').innerText = 'Войти в облако →';
@@ -877,11 +840,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
           </svg>
         `;
-        if (mobAvatar) {
-          mobAvatar.innerText = '?';
-          mobAvatar.className = 'w-7 h-7 rounded-full bg-white/10 flex items-center justify-center font-mono text-xs font-bold text-white/50';
-        }
-        renderProjects();
         return;
       }
 
@@ -898,13 +856,6 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
       `;
-
-      if (mobAvatar) {
-        mobAvatar.innerText = avatarLetter;
-        mobAvatar.className = 'w-7 h-7 rounded-full bg-gradient-to-tr from-[#0593C6] to-[#DB3996] flex items-center justify-center font-mono text-xs font-bold text-white';
-      }
-
-      renderProjects();
     }
 
     function logoutUser() {
@@ -917,6 +868,7 @@
       state.notes = [];
       updateUserProfileUI(null);
       setSyncStatus('local');
+      renderProjects();
       renderTasks();
       renderKanban();
       renderNotes();
@@ -924,9 +876,6 @@
       showToast('Вы вышли из учетной записи');
     }
 
-    /* =========================================================
-       МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ (TELEGRAM / EMAIL)
-       ========================================================= */
     let currentAuthTab = 'telegram';
     let isRegisterMode = false;
 
@@ -1022,151 +971,6 @@
       }
     }
 
-    /* =========================================================
-       ПРОЕКТЫ (УДАЛЕНИЕ, ФИЛЬТРАЦИЯ, ГОСТЕВОЙ РЕЖИМ)
-       ========================================================= */
-    function renderProjects() {
-      const container = document.getElementById('projects-list');
-      container.innerHTML = `
-        <button onclick="filterProject('all')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition ${state.activeProject === 'all' ? 'text-white bg-white/5' : 'text-white/50 hover:text-white'}">
-          Все проекты
-        </button>
-      `;
-
-      // Для гостя доступна только вкладка «Все проекты»
-      if (isUserGuest()) {
-        return;
-      }
-
-      state.projects.forEach(p => {
-        const item = document.createElement('div');
-        item.className = `w-full px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition group cursor-pointer ${state.activeProject === p.id ? 'text-[#0593C6] bg-[#0593C6]/10' : 'text-white/50 hover:text-white'}`;
-        item.innerHTML = `
-          <span class="truncate flex-1 min-w-0" onclick="filterProject('${p.id}')">${p.title}</span>
-          <button onclick="event.stopPropagation(); deleteProject('${p.id}')" title="Удалить проект" class="opacity-70 md:opacity-0 md:group-hover:opacity-100 p-1 text-white/30 hover:text-[#DB3996] rounded transition shrink-0 ml-1">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function deleteProject(id) {
-      const p = state.projects.find(x => x.id === id);
-      const title = p?.title ? `«${p.title}»` : 'этот проект';
-      if (!confirm(`Удалить проект ${title}? Все связанные задачи перейдут в общий список.`)) return;
-
-      state.tasks.forEach(t => {
-        if (t.project === id) {
-          t.project = 'all';
-        }
-      });
-
-      state.projects = state.projects.filter(x => x.id !== id);
-      if (state.activeProject === id) {
-        state.activeProject = 'all';
-      }
-
-      saveState();
-      renderProjects();
-      renderTasks();
-      renderKanban();
-      renderCalendar();
-      showToast('Проект удален', '#DB3996');
-    }
-
-    function openProjectModal() {
-      if (isUserGuest()) {
-        showToast('Войдите в облако для создания своих проектов', '#DB3996');
-        openAuthModal('telegram');
-        return;
-      }
-      document.getElementById('modal-project').classList.remove('hidden');
-      document.getElementById('project-title-input').focus();
-    }
-
-    function closeProjectModal() {
-      document.getElementById('modal-project').classList.add('hidden');
-      document.getElementById('project-title-input').value = '';
-    }
-
-    function confirmCreateProject() {
-      const input = document.getElementById('project-title-input');
-      const val = input.value.trim();
-      if (!val) return;
-      state.projects.push({ id: 'p_' + Date.now(), title: val });
-      saveState();
-      renderProjects();
-      closeProjectModal();
-      showToast(`Проект «${val}» создан`);
-    }
-
-    function filterProject(id) {
-      state.activeProject = id;
-      renderProjects();
-      renderTasks();
-      renderKanban();
-      renderCalendar();
-      toggleSidebar(false);
-    }
-
-    /* =========================================================
-       ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ И НАВИГАЦИЯ
-       ========================================================= */
-    function switchView(view) {
-      ['list', 'calendar', 'kanban', 'notes'].forEach(v => {
-        document.getElementById(`view-${v}`).classList.add('hidden');
-        
-        // Кнопки сайдбара десктопа
-        const nav = document.getElementById(`nav-${v}`);
-        if (nav) {
-          nav.classList.remove('bg-white/10', 'text-white');
-          nav.classList.add('text-white/60');
-        }
-
-        // Кнопки нижнего мобильного бара
-        const mobNav = document.getElementById(`mob-nav-${v}`);
-        if (mobNav) {
-          mobNav.classList.remove('text-[#0593C6]');
-          mobNav.classList.add('text-white/50');
-        }
-      });
-
-      document.getElementById(`view-${view}`).classList.remove('hidden');
-
-      const activeNav = document.getElementById(`nav-${view}`);
-      if (activeNav) {
-        activeNav.classList.add('bg-white/10', 'text-white');
-        activeNav.classList.remove('text-white/60');
-      }
-
-      const activeMobNav = document.getElementById(`mob-nav-${view}`);
-      if (activeMobNav) {
-        activeMobNav.classList.add('text-[#0593C6]');
-        activeMobNav.classList.remove('text-white/50');
-      }
-
-      const titles = {
-        list: ['Список задач', 'Минималистичный персональный фокус'],
-        calendar: ['Календарь событий', 'Планирование и дедлайны по дням'],
-        kanban: ['Канбан-доска', 'Визуализация текущих потоков'],
-        notes: ['Заметки и лонгриды', 'Чистый холст для записей и идей']
-      };
-      document.getElementById('view-title').innerText = titles[view][0];
-      document.getElementById('view-subtitle').innerText = titles[view][1];
-
-      if (view === 'calendar') renderCalendar();
-      if (view === 'kanban') renderKanban();
-      if (view === 'notes') renderNotes();
-
-      toggleSidebar(false);
-    }
-
-    /* =========================================================
-       КАЛЕНДАРНАЯ СИСТЕМА
-       ========================================================= */
     const monthNamesRu = [
       'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
       'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -1226,7 +1030,7 @@
       const isToday = dateKey === todayFormatted;
 
       const cell = document.createElement('div');
-      cell.className = `calendar-cell luxury-card p-1 sm:p-2 rounded-lg sm:rounded-xl flex flex-col justify-between cursor-pointer border ${isToday ? 'border-[#0593C6]/60 bg-[#0593C6]/5 shadow-lg shadow-[#0593C6]/10' : 'border-white/5'} ${isCurrentMonth ? '' : 'opacity-30'}`;
+      cell.className = `calendar-cell luxury-card p-1 sm:p-2 rounded-xl flex flex-col justify-between cursor-pointer border ${isToday ? 'border-[#0593C6]/60 bg-[#0593C6]/5 shadow-lg shadow-[#0593C6]/10' : 'border-white/5'} ${isCurrentMonth ? '' : 'opacity-25'}`;
       
       cell.onclick = (e) => {
         if (e.target.closest('.task-pill')) return;
@@ -1236,7 +1040,7 @@
       const topRow = document.createElement('div');
       topRow.className = 'flex items-center justify-between';
       topRow.innerHTML = `
-        <span class="text-[11px] sm:text-xs font-mono font-medium ${isToday ? 'text-[#0593C6] font-bold' : isCurrentMonth ? 'text-white' : 'text-white/40'}">
+        <span class="text-[10px] sm:text-xs font-mono font-medium ${isToday ? 'text-[#0593C6] font-bold' : isCurrentMonth ? 'text-white' : 'text-white/40'}">
           ${dayNum}
         </span>
         ${isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-[#0593C6]"></span>' : ''}
@@ -1244,7 +1048,7 @@
       cell.appendChild(topRow);
 
       const eventsContainer = document.createElement('div');
-      eventsContainer.className = 'space-y-1 mt-1 overflow-hidden';
+      eventsContainer.className = 'space-y-0.5 sm:space-y-1 mt-1 overflow-hidden';
 
       let dayTasks = state.tasks.filter(t => t.date === dateKey);
       if (state.activeProject !== 'all') {
@@ -1253,7 +1057,7 @@
 
       dayTasks.slice(0, 2).forEach(task => {
         const pill = document.createElement('div');
-        pill.className = `task-pill text-[8px] sm:text-[9px] px-1 sm:px-1.5 py-0.5 rounded truncate transition flex items-center gap-1 ${task.status === 'done' ? 'line-through text-white/30 bg-white/5' : task.status === 'progress' ? 'bg-[#0593C6]/20 text-[#0593C6]' : 'bg-white/10 text-white/80'}`;
+        pill.className = `task-pill text-[8px] sm:text-[9px] px-1 py-0.5 rounded truncate transition flex items-center gap-1 ${task.status === 'done' ? 'line-through text-white/30 bg-white/5' : task.status === 'progress' ? 'bg-[#0593C6]/20 text-[#0593C6]' : 'bg-white/10 text-white/80'}`;
         pill.title = task.title;
         pill.innerHTML = `
           <span class="w-1 h-1 rounded-full shrink-0 ${task.status === 'done' ? 'bg-[#DB3996]' : task.status === 'progress' ? 'bg-[#0593C6]' : 'bg-white/40'}"></span>
@@ -1322,9 +1126,197 @@
       showToast(`Событие назначено на ${state.selectedEventDate}`);
     }
 
-    /* =========================================================
-       ЗАДАЧИ И КАНБАН
-       ========================================================= */
+    const legalDocs = {
+      privacy: `
+        <h4 class="text-sm font-semibold text-white">1. Общие положения</h4>
+        <p>Настоящая Политика конфиденциальности определяет порядок обработки и защиты данных пользователей сервиса <strong>Plané</strong>. Мы собираем строго необходимый минимум информации для облачной синхронизации.</p>
+        
+        <h4 class="text-sm font-semibold text-white mt-3">2. Состав собираемых данных</h4>
+        <ul class="list-disc pl-4 space-y-1 text-white/60">
+          <li><strong>Идентификационные данные:</strong> Telegram ID/Username, либо Email-адрес и хэш пароля.</li>
+          <li><strong>Пользовательский контент:</strong> задачи, события календаря, проекты и заметки.</li>
+          <li><strong>Технические параметры:</strong> сессионный токен JWT и локальные настройки интерфейса.</li>
+        </ul>
+
+        <h4 class="text-sm font-semibold text-white mt-3">3. Хранение и безопасность</h4>
+        <p>Пароли хэшируются с уникальной криптографической солью. Данные передаются по зашифрованному протоколу TLS 1.3 и хранятся в защищенной базе Neon PostgreSQL.</p>
+      `,
+      terms: `
+        <h4 class="text-sm font-semibold text-white">1. Условия использования</h4>
+        <p>Сервис <strong>Plané</strong> предоставляется для персонального и командного планирования на условиях «КАК ЕСТЬ» (AS IS) в режиме Beta.</p>
+
+        <h4 class="text-sm font-semibold text-white mt-3">2. Лицензия MIT</h4>
+        <p class="font-mono text-[11px] bg-white/[0.04] p-3 rounded-xl border border-white/5 text-white/60 leading-normal">
+          Copyright (c) 2026 Plané Project.<br><br>
+          Разрешается безвозмездно использовать, модифицировать и запускать программу при сохранении уведомления об авторских правах.
+        </p>
+      `,
+      cookies: `
+        <h4 class="text-sm font-semibold text-white">1. Использование файлов Cookie и Web Storage</h4>
+        <p>Plané применяет только технически необходимые сессионные данные:</p>
+        <div class="space-y-2 mt-2">
+          <div class="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+            <span class="font-mono text-[#0593C6] font-semibold">plane_jwt</span> — безопасный сессионный токен доступа к API.
+          </div>
+          <div class="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+            <span class="font-mono text-[#0593C6] font-semibold">plane_tasks, plane_notes</span> — локальный кэш ваших заметок и списков.
+          </div>
+        </div>
+      `
+    };
+
+    function checkCookieConsent() {
+      const accepted = localStorage.getItem('plane_cookies_accepted');
+      if (!accepted) {
+        document.getElementById('cookie-banner').classList.remove('hidden');
+      }
+    }
+
+    function acceptCookies() {
+      localStorage.setItem('plane_cookies_accepted', 'true');
+      document.getElementById('cookie-banner').classList.add('hidden');
+      showToast('Настройки конфиденциальности сохранены', '#0593C6');
+    }
+
+    function openLegalModal(tab = 'privacy') {
+      document.getElementById('modal-legal').classList.remove('hidden');
+      switchLegalTab(tab);
+    }
+
+    function closeLegalModal() {
+      document.getElementById('modal-legal').classList.add('hidden');
+    }
+
+    function switchLegalTab(tab) {
+      ['privacy', 'terms', 'cookies'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        btn.classList.remove('bg-white/10', 'text-white');
+        btn.classList.add('text-white/50');
+      });
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      activeBtn.classList.add('bg-white/10', 'text-white');
+      activeBtn.classList.remove('text-white/50');
+
+      document.getElementById('legal-content-body').innerHTML = legalDocs[tab] || '';
+    }
+
+    function showToast(msg, color = '#0593C6') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastInd = document.getElementById('toast-indicator');
+      toastMsg.innerText = msg;
+      toastInd.style.backgroundColor = color;
+      toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+      }, 3000);
+    }
+
+    function switchView(view) {
+      ['list', 'calendar', 'kanban', 'notes'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const nav = document.getElementById(`nav-${v}`);
+        nav.classList.remove('bg-white/10', 'text-white');
+        nav.classList.add('text-white/60');
+      });
+      document.getElementById(`view-${view}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${view}`);
+      activeNav.classList.add('bg-white/10', 'text-white');
+      activeNav.classList.remove('text-white/60');
+
+      const titles = {
+        list: ['Список задач', 'Единый центр задач с быстрым добавлением'],
+        calendar: ['Календарь событий', 'Планирование и просмотр дедлайнов по дням'],
+        kanban: ['Канбан-доска', 'Визуализация текущих потоков'],
+        notes: ['Заметки и лонгриды', 'Чистый холст для записей и идей']
+      };
+      document.getElementById('view-title').innerText = titles[view][0];
+      document.getElementById('view-subtitle').innerText = titles[view][1];
+
+      if (view === 'calendar') renderCalendar();
+      if (view === 'kanban') renderKanban();
+      if (view === 'notes') renderNotes();
+
+      // Авто-закрытие меню на смартфонах
+      if (window.innerWidth < 768) {
+        toggleSidebar(false);
+      }
+    }
+
+    function handleCreateProjectClick() {
+      if (isGuest()) {
+        showToast('Войдите в аккаунт для создания персональных проектов', '#0593C6');
+        openAuthModal('telegram');
+        return;
+      }
+      openProjectModal();
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projects-list');
+      if (!container) return;
+
+      const isAllActive = state.activeProject === 'all';
+      container.innerHTML = `
+        <button onclick="filterProject('all')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition ${isAllActive ? 'text-white bg-white/10 font-semibold' : 'text-white/50 hover:text-white'}">
+          Все проекты
+        </button>
+      `;
+
+      // Для гостя доступна только вкладка "Все проекты"
+      if (isGuest()) {
+        return;
+      }
+
+      state.projects.forEach(p => {
+        const isActive = state.activeProject === p.id;
+        const item = document.createElement('div');
+        item.className = `w-full px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between group transition cursor-pointer ${isActive ? 'text-[#0593C6] bg-[#0593C6]/10 font-semibold' : 'text-white/50 hover:text-white'}`;
+        item.onclick = () => filterProject(p.id);
+        item.innerHTML = `
+          <span class="truncate pr-2">${p.title}</span>
+          <button onclick="event.stopPropagation(); deleteProject('${p.id}')" title="Удалить проект" class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 p-1 text-white/30 hover:text-[#DB3996] rounded transition shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function deleteProject(id) {
+      const proj = state.projects.find(p => p.id === id);
+      if (!proj) return;
+      if (!confirm(`Удалить проект «${proj.title}»? Связанные задачи останутся в общем списке.`)) return;
+
+      state.projects = state.projects.filter(p => p.id !== id);
+      state.tasks.forEach(t => {
+        if (t.project === id) t.project = 'p1';
+      });
+      if (state.activeProject === id) {
+        state.activeProject = 'all';
+      }
+      saveState();
+      renderProjects();
+      renderTasks();
+      renderKanban();
+      renderCalendar();
+      showToast(`Проект «${proj.title}» удален`, '#DB3996');
+    }
+
+    function filterProject(id) {
+      state.activeProject = id;
+      renderProjects();
+      renderTasks();
+      renderKanban();
+      renderCalendar();
+
+      if (window.innerWidth < 768) {
+        toggleSidebar(false);
+      }
+    }
+
     function renderTasks() {
       const container = document.getElementById('tasks-container');
       container.innerHTML = '';
@@ -1344,7 +1336,7 @@
 
       filtered.forEach(task => {
         const item = document.createElement('div');
-        item.className = 'luxury-card p-3 sm:p-3.5 rounded-xl flex items-center justify-between gap-2.5 sm:gap-4 group';
+        item.className = 'luxury-card p-3 sm:p-3.5 rounded-xl flex items-center justify-between gap-3 group';
         const isDone = task.status === 'done';
         item.innerHTML = `
           <div class="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
@@ -1354,11 +1346,11 @@
             <span class="text-xs truncate ${isDone ? 'line-through text-white/30' : 'text-white'}">${task.title}</span>
             ${task.date ? `<span class="hidden sm:inline-block text-[9px] font-mono text-white/40 px-1.5 py-0.5 rounded bg-white/5 shrink-0">${task.date}</span>` : ''}
           </div>
-          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div class="flex items-center gap-2 shrink-0">
             <span class="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded-full ${task.status === 'progress' ? 'bg-[#0593C6]/20 text-[#0593C6]' : task.status === 'done' ? 'bg-[#DB3996]/20 text-[#DB3996]' : 'bg-white/5 text-white/40'}">
               ${task.status === 'progress' ? 'в процессе' : task.status === 'done' ? 'готово' : 'к выполнению'}
             </span>
-            <button onclick="deleteTask('${task.id}')" class="opacity-70 md:opacity-0 md:group-hover:opacity-100 p-1 text-white/40 hover:text-[#DB3996] transition" title="Удалить">
+            <button onclick="deleteTask('${task.id}')" class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 p-1 text-white/40 hover:text-white transition">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -1421,8 +1413,8 @@
         card.innerHTML = `
           <div class="text-xs text-white">${t.title}</div>
           <div class="flex items-center justify-between pt-1">
-            <span class="text-[9px] font-mono text-white/30 truncate max-w-[120px]">${state.projects.find(p => p.id === t.project)?.title || 'Проект'}</span>
-            <div class="flex gap-1 shrink-0">
+            <span class="text-[9px] font-mono text-white/30">${state.projects.find(p => p.id === t.project)?.title || 'Проект'}</span>
+            <div class="flex gap-1">
               ${t.status !== 'todo' ? `<button onclick="moveTask('${t.id}', 'todo')" class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10 text-white/60">←</button>` : ''}
               ${t.status !== 'progress' ? `<button onclick="moveTask('${t.id}', 'progress')" class="text-[9px] px-1.5 py-0.5 rounded bg-[#0593C6]/10 text-[#0593C6]">●</button>` : ''}
               ${t.status !== 'done' ? `<button onclick="moveTask('${t.id}', 'done')" class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10 text-white/60">→</button>` : ''}
@@ -1448,9 +1440,6 @@
       }
     }
 
-    /* =========================================================
-       ЗАМЕТКИ (СОЗДАНИЕ, РЕДАКТИРОВАНИЕ, УДАЛЕНИЕ)
-       ========================================================= */
     function renderNotes() {
       const list = document.getElementById('notes-list');
       list.innerHTML = '';
@@ -1471,17 +1460,132 @@
 
       state.notes.forEach(n => {
         const item = document.createElement('div');
-        item.className = `luxury-card p-2.5 sm:p-3 rounded-xl cursor-pointer transition flex items-center justify-between group ${state.activeNoteId === n.id ? 'border-[#0593C6]/60 bg-white/10' : ''}`;
+        item.className = `luxury-card p-3 rounded-xl cursor-pointer transition flex items-center justify-between group ${state.activeNoteId === n.id ? 'border-[#0593C6]/60 bg-white/10' : ''}`;
         item.onclick = () => selectNote(n.id);
         item.innerHTML = `
           <div class="min-w-0 flex-1 pr-2">
             <div class="text-xs font-medium text-white truncate">${n.title || 'Без названия'}</div>
             <div class="text-[10px] text-white/40 truncate mt-0.5">${n.content || 'Пустая заметка'}</div>
           </div>
-          <button onclick="event.stopPropagation(); deleteNote('${n.id}')" title="Удалить заметку" class="opacity-70 md:opacity-0 md:group-hover:opacity-100 p-1.5 text-white/30 hover:text-[#DB3996] hover:bg-white/5 rounded-lg transition shrink-0">
+          <button onclick="event.stopPropagation(); deleteNote('${n.id}')" title="Удалить заметку" class="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 text-white/30 hover:text-[#DB3996] hover:bg-white/5 rounded-lg transition shrink-0">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
         `;
         list.appendChild(item);
+      });
+
+      if (!state.activeNoteId && state.notes.length > 0) {
+        selectNote(state.notes[0].id);
+      }
+    }
+
+    function selectNote(id) {
+      state.activeNoteId = id;
+      const note = state.notes.find(n => n.id === id);
+      if (note) {
+        document.getElementById('active-note-title').value = note.title;
+        document.getElementById('active-note-content').value = note.content;
+      }
+      renderNotes();
+    }
+
+    function createNewNote() {
+      const newNote = {
+        id: 'n_' + Date.now(),
+        title: 'Новая заметка',
+        content: ''
+      };
+      state.notes.unshift(newNote);
+      saveState();
+      selectNote(newNote.id);
+      document.getElementById('active-note-title').focus();
+      showToast('Заметка создана', '#0593C6');
+    }
+
+    function saveCurrentNote() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (note) {
+        note.title = document.getElementById('active-note-title').value;
+        note.content = document.getElementById('active-note-content').value;
+        saveState();
+        
+        const activeItem = document.querySelector('#notes-list .border-\[\#0593C6\]\/60');
+        if (activeItem) {
+          const titleEl = activeItem.querySelector('.text-xs');
+          const previewEl = activeItem.querySelector('.text-\[10px\]');
+          if (titleEl) titleEl.innerText = note.title || 'Без названия';
+          if (previewEl) previewEl.innerText = note.content || 'Пустая заметка';
+        }
+      }
+    }
+
+    function deleteNote(id) {
+      const note = state.notes.find(n => n.id === id);
+      const noteTitle = note?.title ? `«${note.title}»` : 'эту заметку';
+      
+      if (!confirm(`Вы действительно хотите удалить ${noteTitle}?`)) return;
+
+      state.notes = state.notes.filter(n => n.id !== id);
+      if (state.activeNoteId === id) {
+        state.activeNoteId = state.notes.length > 0 ? state.notes[0].id : null;
+      }
+      
+      saveState();
+      renderNotes();
+      showToast('Заметка удалена', '#DB3996');
+    }
+
+    function deleteActiveNote() {
+      if (!state.activeNoteId) return;
+      deleteNote(state.activeNoteId);
+    }
+
+    function updateCounts() {
+      document.getElementById('badge-tasks-count').innerText = state.tasks.filter(t => t.status !== 'done').length;
+      document.getElementById('badge-notes-count').innerText = state.notes.length;
+    }
+
+    function openProjectModal() {
+      document.getElementById('modal-project').classList.remove('hidden');
+      document.getElementById('project-title-input').focus();
+    }
+
+    function closeProjectModal() {
+      document.getElementById('modal-project').classList.add('hidden');
+      document.getElementById('project-title-input').value = '';
+    }
+
+    function confirmCreateProject() {
+      const input = document.getElementById('project-title-input');
+      const val = input.value.trim();
+      if (!val) return;
+      state.projects.push({ id: 'p_' + Date.now(), title: val });
+      saveState();
+      renderProjects();
+      closeProjectModal();
+      showToast(`Проект «${val}» создан`);
+    }
+
+    function handleSearch(val) {
+      state.searchQuery = val;
+      renderTasks();
+      renderCalendar();
+    }
+
+    const savedUser = localStorage.getItem('plane_user');
+    if (savedUser) {
+      updateUserProfileUI(JSON.parse(savedUser));
+    } else {
+      updateUserProfileUI(null);
+    }
+    renderProjects();
+    renderTasks();
+    renderNotes();
+    updateCounts();
+    checkCookieConsent();
+    pullFromCloud();
+  </script>
+</body>
+</html>
